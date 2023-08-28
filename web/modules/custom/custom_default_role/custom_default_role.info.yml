@@ -1,0 +1,5 @@
+name: 'custom_default_role'
+type: module
+description: 'Custom default role while registering'
+package: Custom
+core_version_requirement: ^10

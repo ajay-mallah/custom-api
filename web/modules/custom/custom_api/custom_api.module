@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for custom_api module.
+ */
+
+ /**
+  * 
+  */
+function custom_api_theme($existing, $type, $theme, $path) {
+  return [
+    'custom_api_homepage_theme' => [
+      'variables' => [
+        'admin_register_route' => NULL,
+        'non_admin_register_route' => NULL,
+        'login_route' => NULL,
+      ],
+      'render element' => 'children',
+    ]
+  ];
+}

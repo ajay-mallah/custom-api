@@ -1,0 +1,8 @@
+rest_api.blogs:
+  path: /api/blogs
+  defaults:
+    _controller: '\Drupal\rest_api\Controller\BlogController'
+    _title: Blogs
+  requirements:
+    _access: 'TRUE'
+  format: json

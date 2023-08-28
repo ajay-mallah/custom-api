@@ -1,0 +1,6 @@
+custom_default_role.role_form_link:
+  title: 'Default Role'
+  description: 'Role form for user registration.'
+  route_name: custom_default_role.roles_form
+  parent: system.admin_config
+  weight: 8

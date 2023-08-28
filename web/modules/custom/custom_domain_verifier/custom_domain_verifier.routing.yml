@@ -1,0 +1,7 @@
+custom_domain_verifier.domain_form:
+  path: 'admin/config/domain'
+  defaults:
+    _form: 'Drupal\custom_domain_verifier\Plugin\Form\DomainForm'
+    _title: 'Domain'
+  requirements:
+    _permission: 'domain form permission'

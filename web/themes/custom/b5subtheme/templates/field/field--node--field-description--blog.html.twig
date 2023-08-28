@@ -1,0 +1,14 @@
+<div class="py-3 w-100">
+  {%
+    set classes = [
+      'text-primary',
+
+    ]
+  %}
+  <p class="body-full d-none">{{ description_text.full }}</p>
+  <p class="body-trimmed">{{ description_text.trimmed }}</p>
+  <a href="#" class="text-primary  read-more">read more</a>
+  <a href="#" class="text-primary d-none read-less">read less</a>
+</div>
+{# {{ drupal_block('views_block:recommended_blogs-block_1') }} #}
+{# {{ drupal_view('test', 'block_1') }} #}

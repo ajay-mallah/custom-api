@@ -1,0 +1,5 @@
+name: 'like_module'
+type: module
+description: 'Like module'
+package: Custom
+core_version_requirement: ^10

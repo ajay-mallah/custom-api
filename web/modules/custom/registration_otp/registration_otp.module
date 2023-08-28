@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for registration_otp module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\user\UserInterface;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
+
+/**
+ * Implements hook_form_id_alter for  registration_otp.
+ */
+function registration_otp_form_user_register_form_alter(array &$form, FormStateInterface &$form_state) {
+  $form['field_verified']['#access'] = FALSE;
+  if (!$form['administer_users']['#value']) {
+    $form['actions']['submit']['#value'] = t("verify otp");
+    $form['actions']['submit']['#submit'][] = 'registration_otp_submit';
+
+    if (isset($_GET['destination'])) {
+      $form['destination'] = array(
+        '#type' => 'hidden',
+        '#value' => $_GET['destination']
+      );
+      unset($_GET['destination']);
+    }
+
+    // We remove save function call and handle it internally.
+    if (($key = array_search('::save', $form['actions']['submit']['#submit'])) !== false) {
+      unset($form['actions']['submit']['#submit'][$key]);
+    }
+  }
+}
+
+/**
+ * Register form submit handler.
+ */
+function registration_otp_submit(array &$form, FormStateInterface &$form_state) {
+  $account = $form['language']['preferred_langcode']['#pre_render']['user_langcode'][0]->buildEntity($form, $form_state);
+  $account->set('field_verified', FALSE);
+  $account->save();
+
+  // Redirects to otp form after email sent.
+  if (registration_otp_mail_otp($account)) {
+    Drupal::messenger()->addMessage(t("OTP has been send to %email", 
+      ['%email' => $account->get('mail')->value])
+    );
+
+    // Storing uid in the session storage.
+    $_SESSION['uid'] = $account->id();
+
+    if ($form_state->getValue('destination')) {
+      $form_state->setRedirectUrl(new Url('registration_otp.otp_form', [
+        'query' => ['destination' => $form_state->getValue('destination')]
+      ]));
+    }
+    else {
+      $form_state->setRedirectUrl(new Url('registration_otp.otp_form', []));
+    }
+  }
+  else {
+    Drupal::messenger()->addError(t("There is a problem while sending mail"));
+  }
+}
+
+/**
+ * Mails OTP to the current user account
+ */
+function registration_otp_mail_otp(UserInterface $account) {
+  $email = $account->get('mail')->value;
+  $uid = $account->id();
+
+  $otp = random_int(100000, 999999);
+
+  $mailManager = \Drupal::service('plugin.manager.mail');
+
+  $mail_status = $mailManager->mail(
+    'registration_otp',
+    'send_otp',
+    $account->get('mail')->value,
+    $account->getPreferredLangcode(),
+    [
+      'title' => 'OTP Verification',
+      'body' => 'your one time password is'. $otp,
+    ]
+  );
+
+  if ($mail_status) {
+    $userData = \Drupal::service('user.data');
+    $userData->set('registration_otp', $account->id(), 'otp_string', $otp);
+  }
+  return $mail_status;
+}
+
+/**
+  * Implements hook_mail.
+  */
+ function registration_otp_mail($key, &$message, $params) {
+  // options array for the message body
+  $options = [
+    'langcode' => $message['langcode'],
+  ];
+
+  switch ($key) { 
+    case 'send_otp':
+      $message['from'] = Drupal::config('system.site')->get('mail');
+      $message['subject'] = "mailing otp!";
+      $message['body'][] = Html::escape($params['body']);
+      break;
+  }
+ }
+
+/**
+ * Implements hook_views_query_alter to display email verified user.
+ */
+function registration_otp_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'user_admin_people') {
+    $query->where[1]['conditions'][] = [
+      "field" => "users_field_data.login > 0",
+      "value" => [],
+      "operator" => "formula"
+    ];
+  }
+}

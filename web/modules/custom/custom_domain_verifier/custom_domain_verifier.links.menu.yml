@@ -1,0 +1,6 @@
+custom_domain_verifier.domain_form_link:
+  title: 'Domain'
+  description: 'Domain form for user registration.'
+  route_name: custom_domain_verifier.domain_form
+  parent: system.admin_config
+  weight: 7

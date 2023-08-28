@@ -1,0 +1,7 @@
+name: 'registration_otp'
+type: module
+description: 'Registration With OTP'
+package: Custom
+core_version_requirement: ^10
+dependencies:
+  - drupal:user

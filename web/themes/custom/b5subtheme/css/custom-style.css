@@ -1,0 +1,18 @@
+.field--name-title{
+  display: none;
+}
+
+.blog-title-related a {
+  display:inline-block !important;
+}
+
+.related-blogs {
+  width: 40%;
+}
+
+.field--name-field__blog-tags{
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin: 1rem 0;
+}

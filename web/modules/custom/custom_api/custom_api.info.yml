@@ -1,0 +1,5 @@
+name: 'custom_api'
+type: module
+description: 'Custom API'
+package: Custom
+core_version_requirement: ^10

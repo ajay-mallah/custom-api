@@ -1,0 +1,7 @@
+name: 'mail_test'
+type: module
+description: 'Mail Testing module'
+package: Custom
+core_version_requirement: ^10
+dependencies:
+  - maillog:maillog

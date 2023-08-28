@@ -1,0 +1,46 @@
+<?php
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+
+/**
+ * Implements hook_install
+ */
+function registration_otp_install() {
+  $entities = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['status' => TRUE]);
+  foreach ($entities as $entity) {
+    $entity->set('field_verified', TRUE);
+  }
+}
+
+// /**
+//  * Implements hook_
+//  */
+// function hook_modules_installed($modules, $is_syncing) {
+//   if (in_array('lousy_module', $modules)) {
+//     \Drupal::state()
+//       ->set('mymodule.lousy_module_compatibility', TRUE);
+//   }
+//   if (!$is_syncing) {
+//     \Drupal::service('mymodule.service')
+//       ->doSomething($modules);
+//   }
+// }
+
+/**
+ * Implements hook_uninstall.
+ */
+function registration_otp_uninstall() {
+  // Deleting field storage.
+  if ($field_storage = FieldStorageConfig::loadByName('user', 'field_verified')) {
+    $field_storage->delete();
+  }
+
+  // Deleting field.
+  $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
+  foreach ($roles as $role => $name) {
+    if ($field = FieldConfig::loadByName('user', $role, 'field_verified')) {
+      $field->delete();
+    }
+  }
+}

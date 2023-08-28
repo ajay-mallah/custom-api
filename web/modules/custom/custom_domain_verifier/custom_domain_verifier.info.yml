@@ -1,0 +1,5 @@
+name: 'custom_domain_verifier'
+type: module
+description: 'Custom domain verification while user registration.'
+package: Custom
+core_version_requirement: ^10

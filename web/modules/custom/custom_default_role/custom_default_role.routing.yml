@@ -1,0 +1,15 @@
+custom_default_role.roles_form:
+  path: 'admin/config/role'
+  defaults:
+    _form: 'Drupal\custom_default_role\Plugin\Form\RoleForm'
+    _title: 'Roles'
+  requirements:
+    _permission: 'role form permission'
+
+custom_default_role.role_list:
+  path: 'default_role/role_list'
+  defaults:
+    _controller: 'Drupal\custom_default_role\Controller\RoleListController::getRoleList'
+    _title: 'role list'
+  requirements:
+    _permission: 'role form permission'

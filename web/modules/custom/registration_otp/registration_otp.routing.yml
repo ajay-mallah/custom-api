@@ -1,0 +1,6 @@
+registration_otp.otp_form:
+  path: /user/register/otp
+  defaults:
+    _form: Drupal\registration_otp\Form\OTPForm
+  requirements:
+    _access: 'TRUE'

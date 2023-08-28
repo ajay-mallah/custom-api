@@ -1,0 +1,13 @@
+global-styling:
+  css:
+    theme:
+      css/style.css: {}
+      css/custom-style.css: {}
+
+global-js:
+  js:
+    js/like.js: {}
+    js/read-more.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

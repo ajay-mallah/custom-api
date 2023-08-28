@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for mail_test module.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\EntityInterface;
+
+ /**
+  * Implements hook_mail.
+  */
+ function mail_test_mail($key, &$message, $params) {
+  // options array for the message body
+  $options = [
+    'langcode' => $message['langcode'],
+  ];
+
+  switch ($key) { 
+    case 'insert_node':
+      $message['from'] = Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Your mail subject is : @subject', [
+        '@subject' => $params['title'],
+        $options,
+      ]);
+      $message['body'][] = Html::escape($params['body']);
+      break;
+  }
+ }
+
+ /**
+  * A function to send mail.
+  */
+ function mail_test_sendmail($key, $body, $title) {
+  $mailManager = Drupal::service('plugin.manager.mail');
+  $module = 'mail_test';
+  $to = Drupal::currentUser()->getEmail();
+  $params['body'] = $body;
+  $params['title'] = $title;
+  $langcode = Drupal::currentUser()->getPreferredLangcode();
+  $send = TRUE;
+
+  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+  if (!$result['result']) { 
+    $message = t('There was a problem sending your email notification to @email.', array('@email' => $to));
+    \Drupal::logger('mail_test')->error($message);
+    return;
+  }
+  $message = t('An email notification has been sent to @email ', array('@email' => $to));
+  \Drupal::logger('mail_test')->notice($message);
+ }
+
+ /**
+  * Implements hook_entity_insert
+  */
+  function custom_registration_user_login(UserInterface $account) {
+  if ($entity->getEntityTypeId() !=='node') {
+    return;
+  }
+  else if ($entity->bundle() !== 'page') {
+    return;
+  }
+  // Calling send mail function.
+  mail_test_sendmail('node_insert',
+    "node of type page has been created",
+    'node insert'
+  );
+ }

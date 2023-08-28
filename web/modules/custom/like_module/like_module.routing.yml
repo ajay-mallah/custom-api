@@ -1,0 +1,9 @@
+like_module.like:
+  path: '/like-module/like/{nid}'
+  defaults:
+    _controller: '\Drupal\like_module\Controller\LikeModuleController::updateLike'
+  requirements:
+    _permission: 'access content'
+  methods: [POST]
+  options:
+    _ajax_route: TRUE
