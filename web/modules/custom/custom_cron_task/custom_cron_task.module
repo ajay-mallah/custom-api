@@ -23,7 +23,6 @@ function custom_cron_task_cron() {
   }
   catch (Exception $e) {
     Drupal::logger('custom_cron_task')->warning($e->getMessage());
-    dd($e->getMessage());
   }
   foreach ($nodes as $node) {
     $node->delete();

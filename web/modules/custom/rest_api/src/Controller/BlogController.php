@@ -30,7 +30,7 @@ final class BlogController extends ControllerBase {
   }
 
   /**
-   * 
+   * Injects dependencies to the class.
    */
   public static function create(ContainerInterface $container) {
     return new static (
@@ -225,6 +225,4 @@ final class BlogController extends ControllerBase {
     }
     return $tags;
   }
-
-
 }
