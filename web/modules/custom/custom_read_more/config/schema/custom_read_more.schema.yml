@@ -1,0 +1,7 @@
+field.formatter.settings.custom_read_more:
+  type: mapping
+  label: read more formatter settings
+  mapping:
+    foo:
+      type: string
+      label: Foo

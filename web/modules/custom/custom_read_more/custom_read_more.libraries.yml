@@ -1,0 +1,9 @@
+default:
+  js:
+    assets/js/read-more.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+  css:
+    theme:
+      assets/css/style.css: {}

@@ -1,0 +1,16 @@
+<div class="py-3 w-100">
+  {%
+    set classes = [
+      'text-primary',
+
+    ]
+  %}
+  <p class="body-full d-none">
+    {{ text }}
+    <a href="#" class="text-primary read-less">read less</a>
+  </p>
+  <p class="body-trimmed">
+    {{ trimmed }}
+    <a href="#" class="text-primary  read-more">read more</a>
+  </p>
+</div>

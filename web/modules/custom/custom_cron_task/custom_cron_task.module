@@ -11,21 +11,23 @@ use Drupal\node\Entity\Node;
  * Implements hook_cron for automatically delete old blogs.
  */
 function custom_cron_task_cron() {
-  try {
-    $entityTypeManager = Drupal::service('entity_type.manager');
-    $query = $entityTypeManager->getStorage('node')->getQuery()->accessCheck(TRUE);
-    $nodes = $query->condition('type', 'blog')
-      ->condition('uid.entity.roles', ['content_editor'], 'IN')
-      ->condition('uid.entity.name', 'optimus', '!=')
-      ->condition('created', strtotime('-1 second'), '<=')
-      ->execute();
-    $nodes = $entityTypeManager->getStorage('node')->loadMultiple(array_values($nodes));
+  if (date('G') == 5) {
+    try {
+      $entityTypeManager = Drupal::service('entity_type.manager');
+      $query = $entityTypeManager->getStorage('node')->getQuery()->accessCheck(TRUE);
+      $nodes = $query->condition('type', 'blog')
+        ->condition('uid.entity.roles', ['content_editor'], 'IN')
+        ->condition('uid.entity.name', 'optimus', '!=')
+        ->condition('created', strtotime('-1 second'), '<=')
+        ->execute();
+      $nodes = $entityTypeManager->getStorage('node')->loadMultiple(array_values($nodes));
+    }
+    catch (Exception $e) {
+      Drupal::logger('custom_cron_task')->warning($e->getMessage());
+    }
+    foreach ($nodes as $node) {
+      $node->delete();
+    }
+    Drupal::messenger()->addMessage(t("node deleted successfully"));
   }
-  catch (Exception $e) {
-    Drupal::logger('custom_cron_task')->warning($e->getMessage());
-  }
-  foreach ($nodes as $node) {
-    $node->delete();
-  }
-  Drupal::messenger()->addMessage(t("node deleted successfully"));
 }

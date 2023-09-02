@@ -7,7 +7,6 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,12 +17,17 @@ use Symfony\Component\HttpFoundation\Request;
 final class BlogController extends ControllerBase {
 
   /**
+   * Manages entity type plugin definitions.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManager
    */
   protected $entityTypeManager;
 
   /**
+   * Sets class variables.
+   *
    * @param \Drupal\Core\Entity\EntityTypeManager $entityTypeManager
+   *   Manages entity type plugin definitions.
    */
   public function __construct(EntityTypeManager $entityTypeManager) {
     $this->entityTypeManager = $entityTypeManager;
@@ -33,7 +37,7 @@ final class BlogController extends ControllerBase {
    * Injects dependencies to the class.
    */
   public static function create(ContainerInterface $container) {
-    return new static (
+    return new static(
       $container->get('entity_type.manager'),
     );
   }
@@ -54,8 +58,9 @@ final class BlogController extends ControllerBase {
 
   /**
    * Sets conditional parameters.
-   * 
-   * @param Symfony\Component\HttpFoundation\Request $request
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   Request represents an HTTP request.
    */
   public function setConditions(Request $request) {
     $params = [];
@@ -67,7 +72,7 @@ final class BlogController extends ControllerBase {
       // Setting up the taxonomy term condition parameters.
       if (!empty($terms)) {
         $term_ids = [];
-        foreach($terms as $term) {
+        foreach ($terms as $term) {
           array_push($term_ids, $term->id());
         }
         $params['tags'] = [
@@ -111,7 +116,7 @@ final class BlogController extends ControllerBase {
 
   /**
    * Fetches node ids based on query parameters.
-   * 
+   *
    * @param array $params
    *   Contains request parameters.
    */
@@ -119,11 +124,11 @@ final class BlogController extends ControllerBase {
     try {
       $storage = $this->entityTypeManager->getStorage('node');
       $nids = $storage
-      ->getQuery()
-      ->accessCheck(true)
-      ->condition('type', 'blog');
-      
-      foreach($params as $condition) {
+        ->getQuery()
+        ->accessCheck(TRUE)
+        ->condition('type', 'blog');
+
+      foreach ($params as $condition) {
         $nids = $nids->condition(
           $condition['key'],
           $condition['value'],
@@ -132,8 +137,8 @@ final class BlogController extends ControllerBase {
       }
       $nids = $nids->execute();
     }
-    catch (Exception $e) {
-      \Drupal::logger('rest_api')->warning($e->getMessage());
+    catch (\Exception $e) {
+      $this->loggerFactory->get('rest_api')->warning($e->getMessage());
       return [];
     }
 
@@ -142,11 +147,12 @@ final class BlogController extends ControllerBase {
 
   /**
    * Pre-processes the node fields.
-   * 
-   * @param array $nodes 
-   * 
+   *
+   * @param array $nodes
+   *   Array of nodes.
+   *
    * @return array
-   *   returns associative array with field key and value.
+   *   Returns associative array with field key and value.
    */
   private function preProcessNode(array $nodes) {
     $tags = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree('tags');
@@ -174,20 +180,18 @@ final class BlogController extends ControllerBase {
     return $data;
   }
 
-
   /**
    * Returns tags information for a give target id of the taxonomy_term.
-   * 
-   * @param $taxonomy_terms
-   *  Objects of taxonomy terms.
-   * 
-   * @param $target_ids.
+   *
+   * @param array $taxonomy_terms
+   *   Objects of taxonomy terms.
+   * @param array $target_ids
    *   Target id of the taxonomy.
-   * 
+   *
    * @return array
    *   Returns associative array with tags name and url link.
    */
-  private function getTagsWithLink($taxonomy_terms, $target_ids) :array {
+  private function getTagsWithLink(array $taxonomy_terms, array $target_ids) :array {
     $tags = [];
     foreach ($target_ids as $tid) {
       $tid = $tid['target_id'];
@@ -207,13 +211,12 @@ final class BlogController extends ControllerBase {
 
   /**
    * Returns tags information for a give target id of the taxonomy_term.
-   * 
-   * @param $taxonomy_terms
-   *  Objects of taxonomy terms.
-   * 
-   * @param $target_ids.
+   *
+   * @param array $taxonomy_terms
+   *   Objects of taxonomy terms.
+   * @param array $target_ids
    *   Target id of the taxonomy.
-   * 
+   *
    * @return array
    *   Returns associative array with tag names.
    */
@@ -225,4 +228,5 @@ final class BlogController extends ControllerBase {
     }
     return $tags;
   }
+
 }
